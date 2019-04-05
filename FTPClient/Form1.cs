@@ -16,16 +16,16 @@ namespace FTPClient
     {
         private FtpWebRequest ftpWebRequest;
         private FtpWebResponse ftpWebResponse;
-        private String localPath= null;
+        private String localPath = null;
         private String ip;
         private String user;
         private String pwd;
         private String ftpPath;
         private String filePath;
-        Stream readStream = null;
-        FileStream writeStream = null;
-        long totalByte = 0;
-        bool isUpload = false;
+        private Stream readStream = null;
+        private FileStream writeStream = null;
+        private long totalByte = 0;
+        private bool isUpload = false;
 
 
         public Form1()
@@ -74,7 +74,7 @@ namespace FTPClient
                 button3.Enabled = true;
                 button1.Text = "断开";
                 TreeNode root = new TreeNode("/");
-                root.Tag = ftpPath+"/";
+                root.Tag = ftpPath + "/";
                 root.Text = "/";
                 treeView2.Nodes.Add(root);
                 FillFTPTree(root, ftpPath);
@@ -203,7 +203,7 @@ namespace FTPClient
             int percent = (int)(startByte * 100 / totalByte);
             label4.Text = percent + "%";
             Application.DoEvents();
-            ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri("ftp://"+user+"@"+ip+"/"+ file));
+            ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(new Uri("ftp://" + user + "@" + ip + "/" + file));
             ftpWebRequest.Credentials = new NetworkCredential(user, pwd);
             ftpWebRequest.KeepAlive = false;
             ftpWebRequest.Method = WebRequestMethods.Ftp.AppendFile;
@@ -240,7 +240,7 @@ namespace FTPClient
             }
             catch
             {
-                
+
             }
             finally
             {
@@ -257,12 +257,12 @@ namespace FTPClient
 
         private void Download()
         {
-            if(treeView2.SelectedNode == null || treeView2.SelectedNode.Nodes.Count>0)
+            if (treeView2.SelectedNode == null || treeView2.SelectedNode.Nodes.Count > 0)
             {
                 MessageBox.Show("请选择需要下载的文件", "提示");
                 return;
             }
-            if (localPath == null || localPath.Length==0)
+            if (localPath == null || localPath.Length == 0)
             {
                 MessageBox.Show("请选择需要下载到的目录", "提示");
                 return;
@@ -278,7 +278,7 @@ namespace FTPClient
             FtpWebRequest remoteFileLenReq;
             try
             {
-                writeStream = new FileStream(localPath+"\\"+ treeView2.SelectedNode.Text, FileMode.Append);
+                writeStream = new FileStream(localPath + "\\" + treeView2.SelectedNode.Text, FileMode.Append);
                 remoteFileLenReq = (FtpWebRequest)FtpWebRequest.Create(filePath);
                 remoteFileLenReq.Credentials = new NetworkCredential(user, pwd);
                 remoteFileLenReq.UseBinary = true;
@@ -354,10 +354,6 @@ namespace FTPClient
             if (writeStream != null)
             {
                 writeStream.Close();
-            }
-            if (readStream != null)
-            {
-                readStream.Close();
             }
             if (ftpWebResponse != null)
             {
@@ -520,7 +516,7 @@ namespace FTPClient
             {
                 TreeNode node = new TreeNode();
                 node.Text = d;
-                node.Tag = path+"/" + d;
+                node.Tag = path + "/" + d;
                 treeNode.Nodes.Add(node);
                 string subPath = path + "/" + d;
                 FillFTPTree(treeNode.Nodes[i], subPath);
@@ -540,7 +536,7 @@ namespace FTPClient
             List<string> strs = new List<string>();
             try
             {
-                ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(path+"/");
+                ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(path + "/");
                 ftpWebRequest.Credentials = new NetworkCredential(user, pwd);
                 ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
                 WebResponse response = ftpWebRequest.GetResponse();
@@ -548,12 +544,13 @@ namespace FTPClient
                 string line = reader.ReadLine();
                 while (line != null)
                 {
-                    if (line[0]>='0'&& line[0]<='9'&& line.Contains("<DIR>"))
+                    if (line[0] >= '0' && line[0] <= '9' && line.Contains("<DIR>"))
                     {
                         //Windows
                         string msg = line.Substring(line.LastIndexOf("<DIR>") + 5).Trim();
                         strs.Add(msg);
-                    } else if (line[0] == 'd')
+                    }
+                    else if (line[0] == 'd')
                     {
                         //Linux
                         string msg = line.Substring(53).Trim();
@@ -577,7 +574,7 @@ namespace FTPClient
             List<string> strs = new List<string>();
             try
             {
-                ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(path+"/");
+                ftpWebRequest = (FtpWebRequest)FtpWebRequest.Create(path + "/");
                 ftpWebRequest.Credentials = new NetworkCredential(user, pwd);
                 ftpWebRequest.Method = WebRequestMethods.Ftp.ListDirectoryDetails;
                 WebResponse response = ftpWebRequest.GetResponse();
@@ -585,7 +582,7 @@ namespace FTPClient
                 string line = reader.ReadLine();
                 while (line != null)
                 {
-                    if (line[0] >= '0' && line[0] <= '9' && !line.Contains("<DIR>") && line.Length>39)
+                    if (line[0] >= '0' && line[0] <= '9' && !line.Contains("<DIR>") && line.Length > 39)
                     {
                         string msg = line.Substring(39).Trim();
                         strs.Add(msg);
